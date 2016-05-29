@@ -1,9 +1,12 @@
 package com.example.gagan.lbbtask.views;
 
+import android.app.Activity;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Display;
@@ -16,8 +19,8 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
-import com.example.gagan.lbbtask.listeners.AuthenticationListener;
 import com.example.gagan.lbbtask.constants.Constants;
+import com.example.gagan.lbbtask.listeners.DialogActivityCallback;
 
 /**
  * Created by Gagan on 5/28/2016.
@@ -25,25 +28,27 @@ import com.example.gagan.lbbtask.constants.Constants;
 public class AuthenticationDialog extends Dialog {
 
     private static final String TAG = AuthenticationDialog.class.getSimpleName();
-    private final AuthenticationListener mListener;
+    private final DialogActivityCallback dialogActivityCallback;
     private WebView mWebView;
     private LinearLayout mContent;
     private ProgressDialog mSpinner;
+    private Context mContext;
     private java.lang.String mUrl = "https://api.instagram.com/oauth/authorize/?client_id=" + Constants.CLIENT_ID + "&redirect_uri=" + Constants.REDIRECT_URI + "&response_type=code&display=touch&scope=public_content";
 
-      double[] DIMENSIONS_LANDSCAPE;
-      double[] DIMENSIONS_PORTRAIT;
-      double height, width,land_height,land_width;
+    double[] DIMENSIONS_LANDSCAPE;
+    double[] DIMENSIONS_PORTRAIT;
+    double height, width, land_height, land_width;
 
-    public AuthenticationDialog(Context context, AuthenticationListener listener, int h, int w) {
+    public AuthenticationDialog(Context context, int h, int w) {
         super(context);
-        mListener = listener;
-        this.height= .82*h;
-        this.width= .87*w;
-        land_height = (.75)*h;
-        land_width = (.75)*w;
+        mContext = context;
+        dialogActivityCallback = (DialogActivityCallback)mContext;
+        this.height = .82 * h;
+        this.width = .87 * w;
+        land_height = (.75) * h;
+        land_width = (.75) * w;
         DIMENSIONS_PORTRAIT = new double[]{width, height};
-        DIMENSIONS_LANDSCAPE = new double[]{land_width,land_height};
+        DIMENSIONS_LANDSCAPE = new double[]{land_width, land_height};
     }
 
     @Override
@@ -52,6 +57,7 @@ public class AuthenticationDialog extends Dialog {
         mSpinner = new ProgressDialog(getContext());
         mSpinner.requestWindowFeature(Window.FEATURE_NO_TITLE);
         mSpinner.setMessage("Loading Please Wait...");
+        mSpinner.getWindow().setBackgroundDrawable(new ColorDrawable(Color.parseColor("#FFBB5E60")));
 
         mContent = new LinearLayout(getContext());
         mContent.setOrientation(LinearLayout.VERTICAL);
@@ -68,7 +74,7 @@ public class AuthenticationDialog extends Dialog {
 
 
         addContentView(mContent, new FrameLayout.LayoutParams(
-                (int)(dimensions[0] ),  (int)(dimensions[1])));
+                (int) (dimensions[0]), (int) (dimensions[1])));
 
         CookieSyncManager.createInstance(getContext());
         CookieManager cookieManager = CookieManager.getInstance();
@@ -94,11 +100,9 @@ public class AuthenticationDialog extends Dialog {
 
             if (url.startsWith(Constants.REDIRECT_URI)) {
                 String urls[] = url.split("=");
-                mListener.onCodeReceived(urls[1]);
+                if(dialogActivityCallback!=null)
+                    dialogActivityCallback.onCodeReceived(urls[1]);
 
-
-                //mListener.onComplete(urls[1]);
-                //InstagramDialog.this.dismiss();
                 return true;
             }
 
@@ -119,19 +123,28 @@ public class AuthenticationDialog extends Dialog {
             Log.d(TAG, "Loading URL: " + url);
 
             super.onPageStarted(view, url, favicon);
-            mSpinner.show();
+            if (!((Activity) mContext).isFinishing())
+                mSpinner.show();
         }
 
         @Override
         public void onPageFinished(WebView view, String url) {
             super.onPageFinished(view, url);
             String title = mWebView.getTitle();
-//            if (title != null && title.length() > 0) {
-//                mTitle.setText(title);
-//            }
+
             Log.d(TAG, "onPageFinished URL: " + url);
-           mSpinner.dismiss();
+            if (!((Activity) mContext).isFinishing())
+                mSpinner.dismiss();
         }
 
     }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+
+        if(dialogActivityCallback!=null)
+            dialogActivityCallback.finishActivity();
+    }
+
 }

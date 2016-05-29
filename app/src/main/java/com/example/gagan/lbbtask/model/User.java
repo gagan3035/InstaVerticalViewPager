@@ -52,9 +52,5 @@ public class User {
         this.full_name = full_name;
     }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [id = "+id+", profile_picture = "+profile_picture+", username = "+username+", full_name = "+full_name+"]";
-    }
+
 }

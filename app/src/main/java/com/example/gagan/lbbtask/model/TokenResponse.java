@@ -29,9 +29,5 @@ public class TokenResponse {
         this.access_token = access_token;
     }
 
-    @Override
-    public String toString()
-    {
-        return "ClassPojo [user = "+user+", access_token = "+access_token+"]";
-    }
+
 }
