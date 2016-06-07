@@ -15,3 +15,7 @@ ii) Implemented VerticalViewPager with depth animation.
 iii) I have downloaded 20 images at one go and after that i have shown progress dialog to donwload the next bacth of the images.
 
 This is basic app which doesnot maintain login session, each time user have to login again to go back into the application.
+To check this app, you can use following credentials
+Username:30khiladi30
+pswd:qwerty1234
+as we need to add users to sandbox app to access Instagram APIs
