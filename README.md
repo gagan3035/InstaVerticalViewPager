@@ -1,4 +1,4 @@
-# LBBAssignment
+# InstaVerticalViewPager
 
 This project uses Instagram APIs to fecth images with #ifoundawesome and show in Vertical View Pager
 with depth(toss) transition.
